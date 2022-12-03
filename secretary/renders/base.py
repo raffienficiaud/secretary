@@ -8,7 +8,7 @@ import re
 import sys
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
-from jinja2 import Markup
+from markupsafe import Markup
 
 
 PY2 = sys.version_info < (3, 0)

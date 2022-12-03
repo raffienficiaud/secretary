@@ -2,7 +2,7 @@ import sys
 import logging
 import zipfile
 import base64
-from io import BytesIO
+from io import BytesIO, StringIO
 from os import path
 from xml.dom.minidom import parseString
 from mimetypes import guess_type, guess_extension
@@ -73,28 +73,31 @@ class ODTRender(RenderJob):
 
     def _pack(self):
         # Packs and return this Job ODT archive
-        output_stream = BytesIO()
-        zip_file = zipfile.ZipFile(output_stream, 'a', zipfile.ZIP_DEFLATED)
+        output_stream = StringIO()
+        with zipfile.ZipFile(output_stream, 'a', zipfile.ZIP_DEFLATED) as zip_file:
 
-        # We should store the mimetype file without compression.
-        mimetype_file = self.files['mimetype']
-        del self.files['mimetype']
-        zinfo = zipfile.ZipInfo('mimetype')
-        zip_file.writestr(zinfo, mimetype_file)
+            # We should store the mimetype file without compression.
+            mimetype_file = self.files['mimetype']
+            del self.files['mimetype']
+            zinfo = zipfile.ZipInfo('mimetype')
+            zip_file.writestr(zinfo, mimetype_file)
 
-        for name, content in self.files.items():
-            # exclude manifest, it will be added at the end
-            if name == 'META-INF/manifest.xml':
-                continue
+            for name, content in self.files.items():
+                # exclude manifest, it will be added at the end
+                if name == 'META-INF/manifest.xml':
+                    continue
 
-            if sys.version_info >= (2, 7):
-                zip_file.writestr(name, content, zipfile.ZIP_DEFLATED)
-            else:
-                zip_file.writestr(name, content)
+                if sys.version_info >= (2, 7):
+                    zip_file.writestr(name, content, zipfile.ZIP_DEFLATED)
+                else:
+                    zip_file.writestr(name, content)
 
-        # Finally, write manifest version kept by this class
-        zip_file.writestr('META-INF/manifest.xml',
-                          self.manifest.toxml().encode('ascii'))
+            # Finally, write manifest version kept by this class
+            zip_file.writestr('META-INF/manifest.xml',
+                              self.manifest.toxml().encode('ascii'))
+
+        # closing resources
+        self.archive.close()
 
         return output_stream
 

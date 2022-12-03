@@ -24,24 +24,30 @@ import re
 import logging
 import zipfile
 from os import path
+import sys
 from mimetypes import guess_type, guess_extension
 from uuid import uuid4
-from jinja2 import Environment, Undefined, Markup, evalcontextfilter
-from markupsafe import PY2, text_type
+from jinja2 import Environment, Undefined
+from markupsafe import Markup
 
 from .filters import RendererFilterInterface
 from .renders.odtrender import ODTRender, FlatODTRender
+
+
+PY2 = sys.version_info < (3, 0)
+
 
 if not PY2:
     xrange = range
     basestring = (str, bytes)
 
-class SEXMLOutput(text_type):
+class SEXMLOutput(str):
    def __new__(cls, content=u'', encoding=None, errors='strict'):
         if not isinstance(content, basestring):
             return content
 
-        escaped = Markup.escape(content).encode('ascii', 'xmlcharrefreplace')
+        escaped = Markup.escape(content)
+        escaped = escaped.encode('ascii', 'xmlcharrefreplace').decode("ascii")
         return Markup(escaped)
 
 class SecretaryError(Exception):
@@ -173,7 +179,6 @@ class Renderer(RendererFilterInterface, MediaInterface):
         return environment
 
 
-    @evalcontextfilter
     def finalize_value(self, value, *args):
         """Escapes variables values."""
         if isinstance(value, Markup):

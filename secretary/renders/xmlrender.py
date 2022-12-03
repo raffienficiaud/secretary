@@ -27,6 +27,7 @@ class XMLRender(object):
         '''
         Returns a rendered XML string. Template data is passed as kwargs.
         '''
+
         self.prepare_tags()
         template = self.tags.unescape_entities(self.document.toxml())
         template_object = self.job.renderer.environment.from_string(template)

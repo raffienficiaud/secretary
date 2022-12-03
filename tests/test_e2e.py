@@ -13,14 +13,14 @@ sample_data = {
 class E2ETest(TestCase):
     def test_render(self):
         engine = Renderer()
-        template = open('./tests/e2e.fodt', 'rb')
-        output = engine.render(template, **sample_data)
+        with open('./tests/e2e.fodt', 'rb') as template:
+            output = engine.render(template, **sample_data)
 
-        self.assertIn('Unicode V\xc3\xa1l\xc3\xbc\xe1\xba\xbds', output)
-        self.assertIn('True &amp;&amp; True', output)
-        self.assertIn('www.github.com', output)
-        self.assertIn('True output', output)
-        self.assertNotIn('False output', output)
+        self.assertIn('Unicode Válüẽs', output.decode('utf-8'))
+        self.assertIn('True &amp;&amp; True', output.decode('utf-8'))
+        self.assertIn('www.github.com', output.decode('utf-8'))
+        self.assertIn('True output', output.decode('utf-8'))
+        self.assertNotIn('False output', output.decode('utf-8'))
 
         # Should not raises when parsing final xml
         parseString(output)

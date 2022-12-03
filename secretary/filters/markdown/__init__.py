@@ -6,7 +6,7 @@ import re
 from xml.dom import Node
 from xml.dom.minidom import parseString
 from markdown2 import markdown
-from jinja2 import Markup
+from markupsafe import Markup
 from .markdown_map import transform_map
 
 from ..base import SecretaryFilterInterface

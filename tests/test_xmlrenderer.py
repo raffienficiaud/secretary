@@ -23,7 +23,7 @@ SAMPLE_XML = """<?xml version="1.0" encoding="UTF-8"?>
 """
 
 # Init environment and disable autoescape for testing some parts of the code
-env = Environment(extensions=['jinja2.ext.AutoEscapeExtension'])
+env = Environment(extensions=[])# ['jinja2.ext.AutoEscapeExtension'])
 env.autoescape = False
 
 class XMLRenderTestCase(TestCase):
