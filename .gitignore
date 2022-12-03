@@ -8,6 +8,10 @@
 .tox
 .cache
 .vscode
+output.fodt
 dist
 build
 eggs
+venv
+env
+env3
