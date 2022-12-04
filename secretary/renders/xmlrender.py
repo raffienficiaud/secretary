@@ -134,8 +134,10 @@ class XMLRender(object):
         # TODO: Lets filters override "take_upto" value
 
         if take_upto:
-            __ = FLOW_REFERENCES.get(take_upto, FLOW_REFERENCES)
-            input_node = self.node_parent_of_name(tag, __) or input_node
+            if take_upto in FLOW_REFERENCES:
+                __ = FLOW_REFERENCES[take_upto]
+                input_node = self.node_parent_of_name(tag, __)
+
             final_node = self.create_text_node(content)
         elif is_block:
             # Expand field node until a shared parent if found

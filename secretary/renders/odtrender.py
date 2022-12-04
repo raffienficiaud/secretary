@@ -73,7 +73,7 @@ class ODTRender(RenderJob):
 
     def _pack(self):
         # Packs and return this Job ODT archive
-        output_stream = StringIO()
+        output_stream = BytesIO()
         with zipfile.ZipFile(output_stream, 'a', zipfile.ZIP_DEFLATED) as zip_file:
 
             # We should store the mimetype file without compression.
