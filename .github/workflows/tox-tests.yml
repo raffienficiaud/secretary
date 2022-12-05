@@ -57,7 +57,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Tox test results (${{ matrix.component }})
-          path: ${{ github.workspace }}/.tox/**/*.xml
+          path: ${{ github.workspace }}/.tox/**/test-report*.xml
 
   # because I want 2 different badges
   sanity-checks:
