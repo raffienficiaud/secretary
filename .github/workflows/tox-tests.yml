@@ -10,18 +10,16 @@ jobs:
       matrix:
         target_description:
           - python_version: "3.10"
-            target: py3.10
+            target: py310
           - python_version: 3.9
-            target: py3.9
+            target: py39
           - python_version: 3.8
-            target: py3.8
+            target: py38
           - python_version: 3.7
-            target: py3.7
+            target: py37
           # - python_version: 3.6
           #   target: py3.6
 
-          - python_version: 3.9
-            target: sanity-checks
 
     steps:
       - name: Checkout Code
@@ -59,11 +57,65 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Tox test results (${{ matrix.component }})
-          path: ${{ github.workspace }}/.tox/**/tmp/*.xml
+          path: ${{ github.workspace }}/.tox/**/*.xml
+
+  # because I want 2 different badges
+  sanity-checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target_description:
+          - python_version: 3.9
+            target: sanity-checks
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup Python 3.X
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.target_description.python_version }}
+
+      - name: Install tox/wheel/setuptools
+        run: |
+          python -m pip install --upgrade pip
+          pip install wheel setuptools tox
+
+      - name: List tox environments
+        run: |
+          # runs tox
+          tox -l
+
+      - name: Install dependencies from tox
+        timeout-minutes: 15
+        run: |
+          # runs tox with exhaustive package installation
+          tox -e ${{ matrix.target_description.target }} --notest -vv
+
+      - name: Run tests from tox
+        timeout-minutes: 30
+        run: |
+          # runs tox
+          tox -e ${{ matrix.target_description.target }}
+
+      # no test result for this
+      # - name: Upload unit test results
+      #   if: always()
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: Tox test results (${{ matrix.component }})
+      #     path: ${{ github.workspace }}/.tox/**/*.xml
+
+
+
 
   publish-test-results:
     name: 'publish unit tests results'
-    needs: [python-tox-tests]
+    needs:
+      - python-tox-tests
+      - sanity-checks
     runs-on: ubuntu-latest
     # previous jobs might be skipped, we don't need to run this job then
     if: success() || failure()
