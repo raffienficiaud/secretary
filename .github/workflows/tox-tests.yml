@@ -9,16 +9,16 @@ jobs:
       fail-fast: false
       matrix:
         target_description:
-          - python_version: 3.10
-            target: 3.10
+          - python_version: "3.10"
+            target: py3.10
           - python_version: 3.9
-            target: 3.9
+            target: py3.9
           - python_version: 3.8
-            target: 3.8
+            target: py3.8
           - python_version: 3.7
-            target: 3.7
-          - python_version: 3.6
-            target: 3.6
+            target: py3.7
+          # - python_version: 3.6
+          #   target: py3.6
 
           - python_version: 3.9
             target: sanity-checks
