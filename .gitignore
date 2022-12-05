@@ -8,6 +8,7 @@
 .tox
 .cache
 .vscode
+__pycache__
 output.fodt
 dist
 build
